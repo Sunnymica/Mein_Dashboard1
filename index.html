@@ -546,7 +546,7 @@
             
             <!-- Morgen-Tagebuch -->
             <div class="card">
-                <h2>📝 Was ich schon tat heute</h2>
+                <h2>📝 Heute schon erledigt</h2>
                 <p style="margin-bottom: 10px; color: #666;">Kleine Erfolge zählen auch!</p>
                 
                 <div style="display: flex; gap: 10px; margin-bottom: 15px;">
@@ -641,6 +641,11 @@
                         <button class="increment-btn" onclick="incrementCounter('romanWords', 500)">+500</button>
                         <button class="increment-btn" onclick="incrementCounter('romanWords', 1000)">+1000</button>
                     </div>
+                </div>
+                
+                <div style="margin: 10px 0; display: flex; gap: 8px; align-items: center;">
+                    <input type="number" id="manualWordsInput" placeholder="Wörter..." style="width: 100px; padding: 5px 10px; border: 2px solid #667eea; border-radius: 5px; font-size: 0.9em;" />
+                    <button class="increment-btn" onclick="addManualWords()" style="padding: 5px 15px;">+ Hinzufügen</button>
                 </div>
                 
                 <div class="progress-bar">
@@ -1015,8 +1020,8 @@
                 'artikel': `
                     <strong>✍️ Artikel-Modus aktiviert!</strong><br><br>
                     1. Sammle jetzt Notizen und Stichpunkte<br>
-                    2. Schreiben erst später: Mo/Mi/Sa 16:30-18:30<br>
-                    3. Notfall-Slot: Di/Mi nach Unterricht<br><br>
+                    2. Schreiben wann du willst - keine festen Zeiten!<br>
+                    3. Nur Mo/Di abends Unterricht, sonst flexibel<br><br>
                     <em>Die Welt dreht sich weiter. Deine Gedanken sind gespeichert.</em>
                 `,
                 'roman': `
@@ -1168,13 +1173,20 @@
                 return;
             }
             
-            container.innerHTML = notes.map((note, index) => `
-                <div class="note-item">
-                    <button class="delete-note" onclick="deleteNote(${index})">✕</button>
-                    <div class="note-date">${note.date}</div>
-                    <div>${note.text}</div>
-                </div>
-            `).join('');
+            container.innerHTML = notes.map((note, index) => {
+                // Make URLs clickable
+                let text = note.text;
+                const urlRegex = /(https?:\/\/[^\s]+)/g;
+                text = text.replace(urlRegex, '<a href="$1" target="_blank" style="color: #667eea; text-decoration: underline;">$1</a>');
+                
+                return `
+                    <div class="note-item">
+                        <button class="delete-note" onclick="deleteNote(${index})">✕</button>
+                        <div class="note-date">${note.date}</div>
+                        <div>${text}</div>
+                    </div>
+                `;
+            }).join('');
         }
         
         function deleteNote(index) {
@@ -1318,7 +1330,7 @@
                         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;">
                             ${overdue.map(({ id, task, status }) => `
                                 <button onclick="markTaskDone('${id}')" style="background: white; border: 2px solid #e74c3c; color: #e74c3c; padding: 10px; border-radius: 8px; cursor: pointer; text-align: left; font-weight: bold; transition: all 0.3s;">
-                                    ${task.name} <span style="font-weight: normal; opacity: 0.8;">(seit ${status.daysSince} Tagen!)</span>
+                                    ${task.name} <span style="font-weight: normal; opacity: 0.8;">(${status.daysSince >= 365 ? 'Steht aus' : 'seit ' + status.daysSince + ' Tagen!'})</span>
                                 </button>
                             `).join('')}
                         </div>
@@ -1587,6 +1599,19 @@
             }
             
             showAchievement(`+${amount} Wörter! Weiter so! 🚀`);
+        }
+        
+        function addManualWords() {
+            const input = document.getElementById('manualWordsInput');
+            const amount = parseInt(input.value);
+            
+            if (!amount || amount <= 0) {
+                alert('Bitte gib eine gültige Zahl ein!');
+                return;
+            }
+            
+            incrementCounter('romanWords', amount);
+            input.value = '';
         }
         
         function incrementBSK() {
