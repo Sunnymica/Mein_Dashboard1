@@ -2425,6 +2425,20 @@ function updateFitnessStreak() {
         showAchievement('🔥 ' + streak + ' Tage Streak! Du bist eine Maschine! 💪');
     }
 }
+        // KROATISCH-STATS LADEN
+function loadKroatischStats() {
+    const today = new Date().toDateString();
+    
+    // Spiele heute
+    const gamesPlayed = JSON.parse(localStorage.getItem('kroatischGamesPlayedToday') || '{}');
+    const todayGames = gamesPlayed[today] || [];
+    const uniqueGames = new Set(todayGames).size;
+    document.getElementById('kroatischGamesPlayed').textContent = uniqueGames;
+    
+    // Bester Streak
+    const bestStreak = parseInt(localStorage.getItem('kroatischBestStreak') || '0');
+    document.getElementById('kroatischBestStreak').textContent = bestStreak;
+}
         // Initialisierung
         document.addEventListener('DOMContentLoaded', () => {
             showDialog('kino');
@@ -2433,6 +2447,7 @@ function updateFitnessStreak() {
             loadHaushaltsTask();
             loadQuickLogs();
             loadSpontanCount();
+            loadKroatischStats();
             assistantCheckIn();
             loadPianoPiece();
             updateDailyOverview();
