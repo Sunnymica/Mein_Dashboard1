@@ -2237,7 +2237,194 @@ Beispiel: https://tagesschau.de/artikel-xyz"></textarea>
                 selectMode(todayMode);
             }
         }
-        
+        // ARTIKEL-NOTIZEN MIT SCREENSHOT-PASTE
+let pastedImage = null;
+
+document.getElementById('articleNote').addEventListener('paste', function(e) {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+            e.preventDefault();
+            const blob = items[i].getAsFile();
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                pastedImage = event.target.result;
+                document.getElementById('previewImage').src = pastedImage;
+                document.getElementById('pastedImage').style.display = 'block';
+                showAchievement('Screenshot eingefügt! 📷✨');
+            };
+            reader.readAsDataURL(blob);
+            break;
+        }
+    }
+});
+
+function clearPastedImage() {
+    pastedImage = null;
+    document.getElementById('pastedImage').style.display = 'none';
+    showAchievement('Bild entfernt! 🗑️');
+}
+
+// FITNESS-TRACKER FUNKTIONEN
+let workoutInterval = null;
+let workoutSeconds = 0;
+let workoutPaused = false;
+let currentWorkout = null;
+
+function startWorkout(name, minutes) {
+    if (workoutInterval) {
+        if (!confirm('Ein Workout läuft bereits. Neues starten?')) return;
+        stopWorkout();
+    }
+    currentWorkout = { name, minutes, startTime: Date.now() };
+    workoutSeconds = minutes * 60;
+    workoutPaused = false;
+    document.getElementById('workoutStatus').textContent = name + ' läuft...';
+    updateWorkoutDisplay();
+    workoutInterval = setInterval(() => {
+        if (!workoutPaused) {
+            workoutSeconds--;
+            updateWorkoutDisplay();
+            if (workoutSeconds <= 0) {
+                completeWorkout();
+            }
+        }
+    }, 1000);
+    showAchievement(name + ' gestartet! Los geht\'s! 💪');
+}
+
+function updateWorkoutDisplay() {
+    const mins = Math.floor(workoutSeconds / 60);
+    const secs = workoutSeconds % 60;
+    document.getElementById('workoutTimer').textContent = 
+        mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+}
+
+function pauseWorkout() {
+    if (!workoutInterval) return;
+    workoutPaused = true;
+    document.getElementById('workoutStatus').textContent = 'Pausiert';
+    showAchievement('Pause eingelegt! ⏸');
+}
+
+function resumeWorkout() {
+    if (!workoutInterval) return;
+    workoutPaused = false;
+    document.getElementById('workoutStatus').textContent = currentWorkout.name + ' läuft...';
+    showAchievement('Weiter geht\'s! 💪');
+}
+
+function stopWorkout() {
+    if (!workoutInterval) return;
+    clearInterval(workoutInterval);
+    workoutInterval = null;
+    workoutSeconds = 0;
+    currentWorkout = null;
+    document.getElementById('workoutTimer').textContent = '00:00';
+    document.getElementById('workoutStatus').textContent = 'Bereit!';
+    showAchievement('Workout gestoppt! ■');
+}
+
+function completeWorkout() {
+    if (!currentWorkout) return;
+    clearInterval(workoutInterval);
+    workoutInterval = null;
+    const minutes = currentWorkout.minutes;
+    logExercise(currentWorkout.name, minutes);
+    document.getElementById('workoutTimer').textContent = '00:00';
+    document.getElementById('workoutStatus').textContent = 'Fertig!';
+    showAchievement('🎉 ' + currentWorkout.name + ' abgeschlossen! ' + minutes + ' Min! 🏆');
+    currentWorkout = null;
+}
+
+function logExercise(name, minutes) {
+    const today = new Date().toDateString();
+    const workouts = JSON.parse(localStorage.getItem('workouts') || '{}');
+    if (!workouts[today]) {
+        workouts[today] = [];
+    }
+    workouts[today].push({
+        name: name,
+        minutes: minutes,
+        time: new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })
+    });
+    localStorage.setItem('workouts', JSON.stringify(workouts));
+    updateFitnessStreak();
+    loadWorkoutLog();
+    loadFitnessStats();
+    showAchievement(name + ' eingetragen! ' + minutes + ' Min! 💪');
+}
+
+function showCustomExercise() {
+    document.getElementById('customExerciseForm').style.display = 'block';
+}
+
+function logCustomExercise() {
+    const name = document.getElementById('customExerciseName').value.trim();
+    const minutes = parseInt(document.getElementById('customExerciseMinutes').value);
+    if (!name || !minutes || minutes <= 0) {
+        alert('Bitte Übung und Minuten eingeben!');
+        return;
+    }
+    logExercise(name, minutes);
+    document.getElementById('customExerciseName').value = '';
+    document.getElementById('customExerciseMinutes').value = '';
+    document.getElementById('customExerciseForm').style.display = 'none';
+}
+
+function loadWorkoutLog() {
+    const today = new Date().toDateString();
+    const workouts = JSON.parse(localStorage.getItem('workouts') || '{}');
+    const todayWorkouts = workouts[today] || [];
+    const container = document.getElementById('workoutLog');
+    if (todayWorkouts.length === 0) {
+        container.innerHTML = '<p style="color: #888; text-align: center; font-style: italic;">Noch keine Workouts heute</p>';
+    } else {
+        container.innerHTML = todayWorkouts.map(w => 
+            '<div style="background: white; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 3px solid #e74c3c;"><strong>' + 
+            w.name + '</strong> - ' + w.minutes + ' Min<div style="font-size: 0.85em; color: #888;">' + w.time + '</div></div>'
+        ).join('');
+    }
+}
+
+function loadFitnessStats() {
+    const today = new Date().toDateString();
+    const workouts = JSON.parse(localStorage.getItem('workouts') || '{}');
+    const todayWorkouts = workouts[today] || [];
+    const totalMinutes = todayWorkouts.reduce((sum, w) => sum + w.minutes, 0);
+    document.getElementById('todayFitnessMinutes').textContent = totalMinutes;
+    const hasFitness = todayWorkouts.some(w => w.name.includes('Rückentraining'));
+    const reminder = document.getElementById('fitnessReminder');
+    if (!hasFitness) {
+        reminder.style.display = 'block';
+    } else {
+        reminder.style.display = 'none';
+    }
+}
+
+function updateFitnessStreak() {
+    const today = new Date().toDateString();
+    const lastDate = localStorage.getItem('lastFitnessDate');
+    let streak = parseInt(localStorage.getItem('fitnessStreak') || '0');
+    if (lastDate !== today) {
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.toDateString();
+        if (lastDate === yesterdayStr) {
+            streak++;
+        } else if (!lastDate) {
+            streak = 1;
+        } else {
+            streak = 1;
+        }
+        localStorage.setItem('fitnessStreak', streak);
+        localStorage.setItem('lastFitnessDate', today);
+    }
+    document.getElementById('fitnessStreak').textContent = streak;
+    if (streak >= 7) {
+        showAchievement('🔥 ' + streak + ' Tage Streak! Du bist eine Maschine! 💪');
+    }
+}
         // Initialisierung
         document.addEventListener('DOMContentLoaded', () => {
             showDialog('kino');
@@ -2250,7 +2437,11 @@ Beispiel: https://tagesschau.de/artikel-xyz"></textarea>
             loadPianoPiece();
             updateDailyOverview();
             updateHouseholdTracker();
-            
+            loadWorkoutLog();
+            loadFitnessStats();
+            updateFitnessStreak();
+            const fitnessStreak = parseInt(localStorage.getItem('fitnessStreak') || '0');
+            document.getElementById('fitnessStreak').textContent = fitnessStreak;
             // Update daily overview every 30 seconds
             setInterval(updateDailyOverview, 30000);
             // Update household tracker every minute
