@@ -1438,7 +1438,7 @@
                 adjektivStreak++;
                 document.getElementById('adjektivScore').textContent = adjektivScore;
                 document.getElementById('adjektivStreak').textContent = adjektivStreak;
-                
+                saveStatsForDashboard();
                 // Highlight correct button
                 buttons.forEach(btn => {
                     if (btn.textContent.trim() === answer) {
@@ -1500,6 +1500,31 @@
             showSection('situations');
             showSituation('postbote');
         });
+        // STATS FÜR DASHBOARD SPEICHERN
+function saveStatsForDashboard() {
+    const today = new Date().toDateString();
+    
+    // Spiele heute speichern
+    let gamesPlayed = JSON.parse(localStorage.getItem('kroatischGamesPlayedToday') || '{}');
+    if (!gamesPlayed[today]) {
+        gamesPlayed[today] = [];
+    }
+    // Aktuelles Spiel hinzufügen (wenn nicht schon drin)
+    const currentGame = document.querySelector('h1').textContent;
+    if (!gamesPlayed[today].includes(currentGame)) {
+        gamesPlayed[today].push(currentGame);
+    }
+    localStorage.setItem('kroatischGamesPlayedToday', JSON.stringify(gamesPlayed));
+    
+    // Besten Streak updaten
+    const currentStreak = parseInt(document.getElementById('currentStreak')?.textContent || '0');
+    const bestStreak = parseInt(localStorage.getItem('kroatischBestStreak') || '0');
+    if (currentStreak > bestStreak) {
+        localStorage.setItem('kroatischBestStreak', currentStreak);
+    }
+}
+
+// Nach jeder richtigen Antwort aufrufen
     </script>
 </body>
 </html>
