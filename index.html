@@ -495,6 +495,77 @@
                 </div>
             </div>
             
+            <!-- FITNESS-BEREICH (NEU!) -->
+<div class="card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white;">
+    <h2 style="color: white; border-bottom-color: rgba(255,255,255,0.3);">💪 FITNESS & RÜCKENTRAINING</h2>
+    
+    <div id="fitnessReminder" class="reminder-box" style="display: none; background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; margin: 15px 0;">
+        ⚠️ HEUTE NOCH KEIN RÜCKENTRAINING!
+    </div>
+    
+    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; margin: 15px 0;">
+        <div style="font-size: 2.5em; font-weight: bold; text-align: center; margin: 10px 0;" id="fitnessStreak">0</div>
+        <div style="text-align: center; font-size: 1.2em; font-weight: bold;">Tage Streak 🔥</div>
+    </div>
+    
+    <div style="background: rgba(255,255,255,0.15); padding: 15px; border-radius: 10px; margin: 15px 0;">
+        <strong style="font-size: 1.1em;">Heute:</strong>
+        <div style="font-size: 2em; font-weight: bold; margin: 10px 0;" id="todayFitnessMinutes">0</div>
+        <div style="font-size: 0.9em;">Minuten trainiert</div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <strong style="font-size: 1.1em;">⏱️ Schnellstart:</strong>
+        <button class="btn" style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;" onclick="startWorkout('Rückentraining', 10)">
+            🏋️ Rückentraining (10 Min)
+        </button>
+        <button class="btn" style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;" onclick="startWorkout('Rückentraining', 15)">
+            🏋️ Rückentraining (15 Min)
+        </button>
+        <button class="btn" style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;" onclick="startWorkout('Rückentraining', 20)">
+            🏋️ Rückentraining (20 Min)
+        </button>
+    </div>
+    
+    <div style="margin-top: 15px;">
+        <strong style="font-size: 1.1em;">🏃 Leibesübungen:</strong>
+        <button class="btn" style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;" onclick="logExercise('Putzen', 30)">
+            🧹 Putzen (30 Min)
+        </button>
+        <button class="btn" style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;" onclick="logExercise('Rasenmähen', 60)">
+            🌱 Rasenmähen (60 Min)
+        </button>
+        <button class="btn" style="width: 100%; margin: 5px 0; padding: 12px; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;" onclick="showCustomExercise()">
+            ➕ Andere Übung...
+        </button>
+    </div>
+    
+    <div id="customExerciseForm" style="display: none; margin-top: 15px; background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+        <input type="text" id="customExerciseName" placeholder="Übung..." style="width: 100%; padding: 10px; border: none; border-radius: 5px; margin-bottom: 10px;">
+        <input type="number" id="customExerciseMinutes" placeholder="Minuten..." style="width: 100%; padding: 10px; border: none; border-radius: 5px; margin-bottom: 10px;">
+        <button onclick="logCustomExercise()" style="background: white; color: #fa709a; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; width: 100%;">
+            ✓ Eintragen
+        </button>
+    </div>
+</div>
+
+<!-- FITNESS-TIMER -->
+<div class="card">
+    <h2>⏱️ Workout-Timer</h2>
+    <div style="font-size: 3em; text-align: center; color: #667eea; font-weight: bold; margin: 20px 0; font-family: 'Courier New', monospace;" id="workoutTimer">00:00</div>
+    <div style="text-align: center; margin: 15px 0; color: #888; font-size: 1.1em;" id="workoutStatus">
+        Bereit!
+    </div>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+        <button class="btn btn-small" style="background: #e74c3c; color: white;" onclick="stopWorkout()">■ Stop</button>
+        <button class="btn btn-small" style="background: #f39c12; color: white;" onclick="pauseWorkout()">⏸ Pause</button>
+        <button class="btn btn-small" style="background: #43e97b; color: white;" onclick="resumeWorkout()">▶ Weiter</button>
+    </div>
+    
+    <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-top: 15px; max-height: 300px; overflow-y: auto;" id="workoutLog">
+        <p style="color: #888; text-align: center; font-style: italic;">Noch keine Workouts heute</p>
+    </div>
+</div>
             <!-- Morgen-Entscheidung -->
             <div class="card">
                 <h2>☀️ Morgen-Entscheidung (5:15 Uhr)</h2>
