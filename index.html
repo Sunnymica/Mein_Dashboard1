@@ -564,15 +564,35 @@
                 </div>
             </div>
             
-            <!-- Artikel-Notizen -->
-            <div class="card">
-                <h2>📋 Artikel-Notizen</h2>
-                <p style="margin-bottom: 10px; color: #666;">Ideen sammeln, später ausarbeiten:</p>
-                <textarea class="notes-area" id="articleNote" placeholder="Was regt dich heute auf? (Titel + 3 Stichpunkte)"></textarea>
-                <button class="btn btn-small" style="background: #f5576c; color: white;" onclick="saveArticleNote()">Notiz speichern</button>
-                
-                <div class="saved-notes" id="savedNotes"></div>
-            </div>
+            <!-- Artikel-Notizen VERBESSERT -->
+<div class="card" style="grid-column: 1 / -1;">
+    <h2>📋 Artikel-Notizen</h2>
+    <p style="margin-bottom: 10px; color: #666;">
+        ✨ URLs werden automatisch zu Links | Screenshots mit Strg+V einfügen
+    </p>
+    
+    <textarea class="notes-area" id="articleNote" placeholder="Schreib hier... URLs werden automatisch zu Links!
+
+📷 Screenshot direkt einfügen: Strg+V / Cmd+V (wie im Chat!)
+
+Beispiel: https://tagesschau.de/artikel-xyz"></textarea>
+    
+    <div class="upload-section">
+        <div id="pastedImage" style="display: none; margin-top: 10px;">
+            <strong style="color: #43e97b;">✓ Screenshot eingefügt!</strong>
+            <img id="previewImage" style="max-width: 200px; height: auto; margin-top: 5px; border-radius: 5px; display: block;">
+            <button onclick="clearPastedImage()" style="background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; font-size: 0.85em;">🗑️ Bild entfernen</button>
+        </div>
+    </div>
+    
+    <button class="btn btn-small" style="background: #f5576c; color: white;" onclick="saveArticleNote()">
+        💾 Notiz speichern
+    </button>
+    
+    <div class="saved-notes" id="savedNotes">
+        <p style="color: #888; text-align: center;">Noch keine Notizen</p>
+    </div>
+</div>
             
             <!-- Haushalts-Tracker -->
             <div class="card">
